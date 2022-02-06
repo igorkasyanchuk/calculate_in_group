@@ -41,6 +41,8 @@ User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 
 # SEE MORE EXAMLES in test/calculate_in_group_test.rb
 ```
 
+Examples: https://github.com/igorkasyanchuk/calculate_in_group/blob/main/test/calculate_in_group_test.rb
+
 ## Installation
 
 ```ruby
