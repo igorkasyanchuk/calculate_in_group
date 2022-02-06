@@ -58,4 +58,14 @@ class CalculateInGroupTest < ActiveSupport::TestCase
     sleep(0.01)
     assert_equal ({"old" => 2}), a.users.calculate_in_group(:count, :created_at, { "old" => 12.hours.ago..1.minutes.ago, "new" => Time.now..10.hours.from_now })
   end
+
+  test 'with scopes' do
+    [2.hours.ago, 1.hour.ago, Time.now, 2.hours.from_now].each {|e| User.create(created_at: e)}
+    sleep(0.01)
+    assert_equal ({}), User.admins.calculate_in_group(:count, :created_at, { "old" => 12.hours.ago..1.minutes.ago, "new" => Time.now..10.hours.from_now })
+    User.delete_all
+    [2.hours.ago, 1.hour.ago, Time.now, 2.hours.from_now].each {|e| User.create(created_at: e, role: "admin")}
+    sleep(0.01)
+    assert_equal ({"old" => 2, "new" => 1}), User.admins.calculate_in_group(:count, :created_at, { "old" => 12.hours.ago..1.minutes.ago, "new" => Time.now..10.hours.from_now })
+  end
 end

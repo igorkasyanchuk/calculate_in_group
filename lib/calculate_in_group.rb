@@ -3,7 +3,7 @@ require "calculate_in_group/railtie"
 
 module CalculateInGroup
   module QueryMethods
-    def calculate_in_group(operation_type, field, ranges = {}, options = {})
+    def calculate_in_group(operation_type, field, groups = {}, options = {})
       raise ArgumentError.new("Operation #{operation_type} not supported. Try to use: :count, :average, :sum, :maximum, :minimum") if ![:count, :average, :sum, :maximum, :minimum].include?(operation_type.to_s.to_sym)
       raise ArgumentError.new("Column #{field} not found in `#{table_name}`") if !column_names.include?(field.to_s)
 
@@ -13,7 +13,7 @@ module CalculateInGroup
       query               = Arel::Nodes::Case.new
       conditions          = []
 
-      ranges.each do |(k, v)|
+      groups.each do |(k, v)|
         case v
         when Range
           a = table[field].gteq(v.begin) if v.begin
@@ -38,11 +38,9 @@ module CalculateInGroup
       res = res.merge(conditions.inject(&:or)) if !options[:include_nil] && conditions.any?
       res = res.group(group_field)
 
-      #puts res.to_sql
-
       res.inject({}) do |res, e|
         key = e.send(group_field)
-        if key.nil? && options[:include_nil].present? && !!options[:include_nil] != options[:include_nil]
+        if key.nil? && options[:include_nil].present? && !!options[:include_nil] != options[:include_nil] # not boolean, when option is a label
           key = options[:include_nil]
         end
         res[key] = e.send(operation_attribute)

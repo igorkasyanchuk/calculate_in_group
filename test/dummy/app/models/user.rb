@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   belongs_to :account, optional: true
 
+  scope :admins, -> { where(role: 'admin') }
+
   def User.generate_random_users
     Account.create(name: "Roga&Kopyta")
     100.times do
