@@ -43,6 +43,11 @@ User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 
 # SEE MORE EXAMLES in test/calculate_in_group_test.rb
 ```
 
+Options:
+
+- `include_nil` (true or value)
+- `default_for_missing` (default value for keys which are not returned by query)
+
 Examples: https://github.com/igorkasyanchuk/calculate_in_group/blob/main/test/calculate_in_group_test.rb
 
 PS: check my other gems here https://www.railsjazz.com/ or directly on github :)
