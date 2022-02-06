@@ -19,6 +19,7 @@ See below how to group your model by ranges or arrays and run aggregations for t
 # Group with Ranges
 User.calculate_in_group(:count, :age, [...10, 10...50, 50..] # => {"...10"=>1, "10...50"=>3, "50.."=>3}
 User.calculate_in_group(:count, :created_at, { "old" => 12.hours.ago..1.minutes.ago, "new" => Time.now..10.hours.from_now }) # => {"old" => 2, "new" => 1}
+User.calculate_in_group :count, :projects_count, [ 0, 1..5, 5..10, 10..100, 100.. ] # => {"0"=>555, "1..5"=>145, "10..100"=>3991, "100.."=>190, "5..10"=>2824} 
 
 # Group with arrays or just values
 User.calculate_in_group(:count, :role, "with_permissions" => ["admin", "moderator"], "no_permissions" => "user") # => {"with_permissions" => 3, "no_permissions" => 3}
