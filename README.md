@@ -63,6 +63,13 @@ And then execute:
 $ bundle
 ```
 
+## TODO
+
+- try with more complex queries, joins, etc. and extend unit tests
+- fix `rake test` command
+- add Github Actions
+- maybe support SQL for values? e.g. "date(current_year)"
+
 ## Testing
 
 `ruby test/calculate_in_group_test.rb`.
