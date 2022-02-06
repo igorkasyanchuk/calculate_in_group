@@ -45,7 +45,7 @@ User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 
 
 Examples: https://github.com/igorkasyanchuk/calculate_in_group/blob/main/test/calculate_in_group_test.rb
 
-PS: check my other gems :)
+PS: check my other gems here https://www.railsjazz.com/ or directly on github :)
 
 ## Installation
 
