@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    calculate_in_group (0.1.0)
+    calculate_in_group (0.0.1)
       rails
 
 GEM

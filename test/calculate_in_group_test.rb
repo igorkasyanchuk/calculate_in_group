@@ -15,18 +15,32 @@ class CalculateInGroupTest < ActiveSupport::TestCase
     assert_equal ({"young" => 1, "old" => 3}), User.calculate_in_group(:count, :age, "young" => [15, 20], "old" => 60..)
     assert_equal ({"young" => 3, "old" => 2, "millenium" => 1 }), User.calculate_in_group(:count, :age, "young" => ..25, "old" => 60..100, "millenium" => 1000)
 
+    # Other agg functions
     assert_equal ({"young" => 11.0, "old" => 80.0}), User.calculate_in_group(:average, :age, "young" => 0..25, "old" => 60..100)
     assert_equal ({"young" => 11.0, "old" => 60.0}), User.calculate_in_group(:average, :age, "young" => 0..25, "old" => 60...100)
-
     assert_equal ({"young" => 20, "old" => 100}), User.calculate_in_group(:maximum, :age, "young" => 0..25, "old" => 60..100)
     assert_equal ({"young" => 3, "old" => 60}), User.calculate_in_group(:minimum, :age, "young" => 0..25, "old" => 60..100)
     assert_equal ({"young" => 33, "old" => 160}), User.calculate_in_group(:sum, :age, "young" => 0..25, "old" => 60..100)
+    assert_equal ({"young" => 33, "old" => 160}), User.calculate_in_group(:sum, :age, {"young" => 0..25, "old" => 60..100})
+
+    # with defaults & nils
+    assert_equal ({"young" => 33, "old" => 160, "baby" => 0}), User.calculate_in_group(:sum, :age, {"young" => 0..25, "old" => 60..100, "baby" => ..2}, {default_for_missing: 0})
+    assert_equal ({"young" => 33, "old" => 160, "baby" => 0, nil => 1120}), User.calculate_in_group(:sum, :age, {"young" => 0..25, "old" => 60..100, "baby" => ..2}, {default_for_missing: 0, include_nil: true})
+    assert_equal ({"young" => 33, "old" => 160, "baby" => 0, 'the rest' => 1120}), User.calculate_in_group(:sum, :age, {"young" => 0..25, "old" => 60..100, "baby" => ..2}, {default_for_missing: 0, include_nil: 'the rest'})
   end
 
-  test 'works with age and NILs' do
+  test 'works with age and nil' do
     [3, 10, 20, 30, 40, 50, 60, 100, 1000].each {|e| User.create(age: e)}
     assert_equal ({"young" => 1, "old" => 1, nil => 7}), User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 60}, {include_nil: true})
     assert_equal ({"young" => 1, "old" => 1, "OTHER" => 7}), User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 60}, {include_nil: "OTHER"})
+  end
+
+  test 'works with age and default_for_missing & nil' do
+    [3, 10, 20, 30, 40, 50, 60, 100, 1000].each {|e| User.create(age: e)}
+    assert_equal 9, User.count
+    assert_equal ({"young" => 1, "old" => 1, "average" => 0}), User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 60}, { default_for_missing: 0 })
+    assert_equal ({"young" => 1, "old" => 1, "average" => 0, nil => 7}), User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 60}, { default_for_missing: 0, include_nil: true })
+    assert_equal ({"young" => 1, "old" => 1, "average" => 0, "OTHER" => 7}), User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 60}, { default_for_missing: 0, include_nil: "OTHER"})
   end
 
   test 'works with role' do
