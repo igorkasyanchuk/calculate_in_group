@@ -1,11 +1,46 @@
-# CalculateInGroup
-Short description and motivation.
+# calculate_in_group
+
+[![RailsJazz](https://github.com/igorkasyanchuk/rails_time_travel/blob/main/docs/my_other.svg?raw=true)](https://www.railsjazz.com)
+[![https://www.patreon.com/igorkasyanchuk](https://github.com/igorkasyanchuk/rails_time_travel/blob/main/docs/patron.svg?raw=true)](https://www.patreon.com/igorkasyanchuk)
+
+Group ActiveRecord models with ranges. No more need to SQL with complex statements. Make your life easier :)
+
+Can solve problems like "I need to group users by age in different categories." or "I need to do some calculations for the reports/charts".
+
+Easy to use, just add to Gemfile `gem "calculate_in_group"` and call `calculate_in_group` on your model.
 
 ## Usage
-How to use my plugin.
+
+See below how to group your model by ranges or arrays and run aggregations for them in one SQL query.
+
+```ruby
+# Grouping can be used with :count, :average, :sum, :maximum, :minimum.
+
+# Group with Ranges
+User.calculate_in_group(:count, :age, [...10, 10...50, 50..] # => {"...10"=>1, "10...50"=>3, "50.."=>3}
+User.calculate_in_group(:count, :created_at, { "old" => 12.hours.ago..1.minutes.ago, "new" => Time.now..10.hours.from_now }) # => {"old" => 2, "new" => 1}
+
+# Group with arrays or just values
+User.calculate_in_group(:count, :role, "with_permissions" => ["admin", "moderator"], "no_permissions" => "user") # => {"with_permissions" => 3, "no_permissions" => 3}
+
+# Other agg functions
+User.calculate_in_group(:average, :age, "young" => 0..25, "old" => 60..100) # => {"young" => 11.0, "old" => 80.0}
+User.calculate_in_group(:average, :age, "young" => 0..25, "old" => 60...100) # => {"young" => 11.0, "old" => 60.0}
+User.calculate_in_group(:maximum, :age, "young" => 0..25, "old" => 60..100) # => {"young" => 20, "old" => 100}
+User.calculate_in_group(:minimum, :age, "young" => 0..25, "old" => 60..100) # => {"young" => 3, "old" => 60}
+User.calculate_in_group(:sum, :age, "young" => 0..25, "old" => 60..100) # => {"young" => 33, "old" => 160}
+User.calculate_in_group(:sum, :age, {"young" => 0..25, "old" => 60..100}) # => {"young" => 33, "old" => 160}
+
+# You can specify "other values" (with custom label) which are out of ranges
+User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 60}, {include_nil: "OTHER"}) # => {"young" => 1, "old" => 1, "OTHER" => 7}
+
+# You can specify default value for keys which are missing in query
+User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 60}, { default_for_missing: 0 }) # => {"young" => 1, "old" => 1, "average" => 0}
+
+# SEE MORE EXAMLES in test/calculate_in_group_test.rb
+```
 
 ## Installation
-Add this line to your application's Gemfile:
 
 ```ruby
 gem "calculate_in_group"
@@ -16,19 +51,16 @@ And then execute:
 $ bundle
 ```
 
-Or install it yourself as:
-```bash
-$ gem install calculate_in_group
-```
-
 ## Testing
 
-ruby test/calculate_in_group_test.rb
+`ruby test/calculate_in_group_test.rb`.
 
 Not sure, why rake test doesn't works for me :)
 
 ## Contributing
-Contribution directions go here.
+
+You are welcome to contribute or share your ideas.
 
 ## License
+
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
