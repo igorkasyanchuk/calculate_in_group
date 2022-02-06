@@ -60,6 +60,8 @@ class CalculateInGroupTest < ActiveSupport::TestCase
   test 'wrong input' do
     assert_raise(ArgumentError) { User.calculate_in_group(:wrong_operation, :created_at, { "old" => ..1.minutes.ago, "new" => Time.now.. }) }
     assert_raise(ArgumentError) { User.calculate_in_group(:count, :not_existing_column, { "old" => ..1.minutes.ago, "new" => Time.now.. }) }
+    assert_raise(ArgumentError) { User.calculate_in_group(:count, :not_existing_column) }
+    assert_raise(ArgumentError) { User.calculate_in_group(:count, :not_existing_column, "ABC") }
   end
 
   test 'with relations' do
@@ -81,5 +83,18 @@ class CalculateInGroupTest < ActiveSupport::TestCase
     [2.hours.ago, 1.hour.ago, Time.now, 2.hours.from_now].each {|e| User.create(created_at: e, role: "admin")}
     sleep(0.01)
     assert_equal ({"old" => 2, "new" => 1}), User.admins.calculate_in_group(:count, :created_at, { "old" => 12.hours.ago..1.minutes.ago, "new" => Time.now..10.hours.from_now })
+  end
+
+  test 'when group is array and different ranges' do
+    [3, 10, 20, 30, 50, 60, 100].each {|e| User.create(age: e)}
+    #  3.1.0 :001 > a = 0..10
+    #  3.1.0 :002 > a.to_a
+    #   => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    #  3.1.0 :003 > a = 0...10
+    #  3.1.0 :004 > a.to_a
+    #   => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert_equal ({"..10"=>2, "11..49"=>2, "50.."=>3 }), User.calculate_in_group(:count, :age, [..10, 11..49, 50..])
+    assert_equal ({"...10"=>1, "11..49"=>2, "50.."=>3}), User.calculate_in_group(:count, :age, [...10, 11..49, 50..])
+    assert_equal ({"...10"=>1, "10...50"=>3, "50.."=>3}), User.calculate_in_group(:count, :age, [...10, 10...50, 50..])
   end
 end
