@@ -5,7 +5,7 @@
 
 Group ActiveRecord models with ranges. No more need to SQL with complex statements. Make your life easier :)
 
-Can solve problems like "I need to group users by age in different categories." or "I need to do some calculations for the reports/charts".
+Can help with tasks like "I need to group users by age in different categories." or "I need to do some calculations for the reports/charts".
 
 Easy to use, just add to Gemfile `gem "calculate_in_group"` and call `calculate_in_group` on your model.
 
