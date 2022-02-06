@@ -9,6 +9,8 @@ Can help with tasks like "I need to group users by age in different categories."
 
 Easy to use, just add to Gemfile `gem "calculate_in_group"` and call `calculate_in_group` on your model.
 
+Works with Postgres, MySQL, SQLite (at least on my computer). Also tried on production and works too, so I can consider it as production-ready.
+
 ## Usage
 
 See below how to group your model by ranges or arrays and run aggregations for them in one SQL query.
@@ -42,6 +44,8 @@ User.calculate_in_group(:count, :age, {"young" => 10, "average" => 25, "old" => 
 ```
 
 Examples: https://github.com/igorkasyanchuk/calculate_in_group/blob/main/test/calculate_in_group_test.rb
+
+PS: check my other gems :)
 
 ## Installation
 
